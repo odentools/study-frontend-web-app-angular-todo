@@ -1,10 +1,15 @@
-<mat-toolbar color="primary">
-  <span>ToDo</span>
-</mat-toolbar>
+<mat-toolbar color="primary"> ToDo </mat-toolbar>
 
-<mat-selection-list>
-  <mat-list-option>ライブの申し込み</mat-list-option>
-  <mat-list-option>セトリの予想</mat-list-option>
-  <mat-list-option>サイリウムの注文</mat-list-option>
-  <mat-list-option>宿の手配</mat-list-option>
+<form (ngSubmit)="onSubmitAddTaskForm()">
+  <mat-form-field appearance="outline" style="width: 100%">
+    <mat-label>タスクを入力</mat-label>
+    <input matInput name="add_task_name" [(ngModel)]="addTaskName" />
+    <button mat-icon-button matSuffix>
+      <mat-icon>send</mat-icon>
+    </button>
+  </mat-form-field>
+</form>
+
+<mat-selection-list *ngFor="let task of tasks">
+  <mat-list-option>{{ task }}</mat-list-option>
 </mat-selection-list>
