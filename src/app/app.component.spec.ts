@@ -1,35 +1,57 @@
-import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { render, screen, fireEvent } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+import { MaterialModule } from './material.module';
+import { FormsModule } from '@angular/forms';
+
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule
-      ],
-      declarations: [
-        AppComponent
-      ],
-    }).compileComponents();
+    await render(AppComponent, {
+      imports: [MaterialModule, FormsModule],
+    });
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+  it('初期状態でタスクが4件表示されているか', () => {
+    // タスク数を検証
+    const taskElems = screen.getAllByRole('option');
+    expect(taskElems.length).toBe(4);
   });
 
-  it(`should have as title 'todo-app'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.tasks.length).toEqual(4);
+  it('タスクを登録できるか', () => {
+    // タスク名を入力
+    const inputElem = screen.getByRole('textbox');
+    userEvent.type(inputElem, 'テスト');
+
+    // 登録ボタンを押す
+    const sendBtn = screen.getByLabelText('登録');
+    userEvent.click(sendBtn);
+
+    // タスク数を検証
+    const taskElems = screen.getAllByRole('option');
+    expect(taskElems.length).toBe(5);
+
+    // タスクの存在を確認
+    expect(
+      screen.getByRole('option', {
+        name: 'テスト',
+      })
+    );
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('todo-app app is running!');
+  it('空欄でタスクを登録しようとするとエラーになるか', () => {
+    // アラートダイアログを監視
+    spyOn(window, 'alert');
+
+    // 登録ボタンを押す
+    const sendBtn = screen.getByLabelText('登録');
+    userEvent.click(sendBtn);
+
+    // アラートダイアログが表示されたことを検証
+    expect(window.alert).toHaveBeenCalled();
+
+    // タスク数を検証
+    const taskElems = screen.getAllByRole('option');
+    expect(taskElems.length).toBe(4);
   });
 });

@@ -11,7 +11,7 @@ export class AppComponent {
   addTaskName = '';
 
   onSubmitAddTaskForm() {
-    if (this.addTaskName == '') return;
+    if (this.addTaskName == '') return window.alert('空欄です');
     this.tasks.push(this.addTaskName);
     this.addTaskName = '';
   }
